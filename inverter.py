@@ -1,10 +1,10 @@
 from __future__ import annotations
-import enum
+from enum import Enum
 
 import socket
 
 
-class InverterStatus(enum):
+class InverterStatus(Enum):
     Offline = -1
     Waiting = 0
     Online = 1
@@ -121,7 +121,7 @@ class Inverter:
 
     def _query_id_info(self) -> dict[str, str]:
         # Execute query id info command
-        payload = self.execute_aa55_command(b"\xaa\x55\xc0\x7f\x01\x02\x00\x02\x41")
+        payload = self._execute_aa55_command(b"\xaa\x55\xc0\x7f\x01\x02\x00\x02\x41")
 
         # Parse response
         model = payload[5:15].decode("ascii").rstrip()
@@ -131,7 +131,7 @@ class Inverter:
 
     def _query_running_info(self) -> dict[str, str]:
         # Execute query running info command
-        payload = self.execute_aa55_command(b"\xaa\x55\xc0\x7f\x01\x01\x00\x02\x40")
+        payload = self._execute_aa55_command(b"\xaa\x55\xc0\x7f\x01\x01\x00\x02\x40")
 
         # Parse response
         l1_voltage = int(payload[8:10].hex(), 16) / 10
