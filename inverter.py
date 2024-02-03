@@ -63,8 +63,8 @@ class Inverter:
         # Check if the first received part of data contains the expected header
         try:
             curResponse = cs.recv(150)
-        except TimeoutError:
-            raise TimeoutError(
+        except TimeoutError as error:
+            raise TimeoutError from error(
                 f'The inverter did not respond to the "{message.hex()}" command.'
             )
 
@@ -90,8 +90,8 @@ class Inverter:
             try:
                 curResponse = cs.recv(150)
 
-            except TimeoutError:
-                raise SystemError(
+            except TimeoutError as error:
+                raise SystemError from error(
                     f'The inverter stopped sending data while we are still expecting data for the "{message.hex()}" command. Received response: {curResponse.hex()}'
                 )
 
