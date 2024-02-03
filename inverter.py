@@ -1,6 +1,14 @@
 from __future__ import annotations
+import enum
 
 import socket
+
+
+class InverterStatus(enum):
+    Offline = -1
+    Waiting = 0
+    Online = 1
+    Error = 2
 
 
 class Inverter:
@@ -12,6 +20,7 @@ class Inverter:
     serial_number = None
     model = None
     work_mode = -1
+    work_mode_string = None
     pac = -1
     e_today = -1
     e_total = -1
@@ -153,16 +162,18 @@ class Inverter:
         except TimeoutError:
             print("Inverter is offline.")
             self.work_mode = -1
+            self.work_mode_string = InverterStatus(self.work_mode).name
             self.pac = 0
             self.l1_voltage = 0
             self.l1_frequency = 0
             self.temperature = 0
             return
-        else:
+        except:
             print("An error occurred during the retrieval of the running info.")
             return
 
         self.work_mode = device_runningInfo["work_mode"]
+        self.work_mode_string = InverterStatus(self.work_mode).name
         self.pac = device_runningInfo["pac"]
         self.e_today = device_runningInfo["e_today"]
         self.e_total = device_runningInfo["e_total"]
