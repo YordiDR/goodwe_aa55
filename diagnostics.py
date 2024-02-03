@@ -1,6 +1,6 @@
-from .inverter import Inverter
+import inverter
 
-inverter = Inverter("adrlpi01.adrlab.xyz", 8002)
+inverter = inverter.Inverter("adrlpi01.adrlab.xyz", 8002)
 
 print(f"Model: {inverter.model}")
 print(f"Serial number: {inverter.serial_number}")
