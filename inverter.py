@@ -64,9 +64,9 @@ class Inverter:
         try:
             curResponse = cs.recv(150)
         except TimeoutError as error:
-            raise TimeoutError from error(
+            raise TimeoutError(
                 f'The inverter did not respond to the "{message.hex()}" command.'
-            )
+            ) from error
 
         if len(curResponse) < 9:
             raise SystemError(
@@ -91,9 +91,9 @@ class Inverter:
                 curResponse = cs.recv(150)
 
             except TimeoutError as error:
-                raise SystemError from error(
+                raise SystemError(
                     f'The inverter stopped sending data while we are still expecting data for the "{message.hex()}" command. Received response: {curResponse.hex()}'
-                )
+                ) from error
 
             response += curResponse
 
