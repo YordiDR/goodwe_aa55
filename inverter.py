@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 import socket
+from typing import Any
 
 from exceptions import InverterError, RequestFailedException
 
@@ -156,7 +157,7 @@ class Inverter:
             "running_hours": running_hours,
         }
 
-    async def update_running_info(self) -> None:
+    async def get_running_info(self) -> dict[str, Any]:
         """Retrieves the running information from the inverter and updates the inverter object."""
 
         try:
@@ -183,3 +184,13 @@ class Inverter:
         self.l1_frequency = device_runningInfo["l1_frequency"]
         self.temperature = device_runningInfo["temperature"]
         self.running_hours = device_runningInfo["running_hours"]
+
+        return {
+            "Work mode": self.work_mode_string,
+            "Feeding power": self.pac,
+            "E today": self.e_today,
+            "E total": self.e_total,
+            "Phase 1 voltage": self.l1_voltage,
+            "Phase 1 frequency": self.l1_frequency,
+            "Internal temperature": self.temperature,
+        }
