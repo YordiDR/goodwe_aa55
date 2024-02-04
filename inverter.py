@@ -4,7 +4,7 @@ from enum import Enum
 import socket
 from typing import Any
 
-from exceptions import InverterError, RequestFailedException
+from .exceptions import InverterError, RequestFailedException
 
 
 class InverterStatus(Enum):
