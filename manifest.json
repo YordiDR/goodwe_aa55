@@ -1,0 +1,17 @@
+{
+  "domain": "goodwe_aa55",
+  "name": "GoodWe Inverter AA55 over RS485",
+  "codeowners": [
+    "@YordiDR"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/YordiDR/home-assistant",
+  "homekit": {},
+  "iot_class": "local_polling",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "version": "0.0.1",
+  "integration_type": "hub"
+}
