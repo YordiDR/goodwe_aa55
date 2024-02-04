@@ -186,11 +186,11 @@ class Inverter:
         self.running_hours = device_runningInfo["running_hours"]
 
         return {
-            "Work mode": self.work_mode_string,
-            "Feeding power": self.pac,
-            "E today": self.e_today,
-            "E total": self.e_total,
-            "Phase 1 voltage": self.l1_voltage,
-            "Phase 1 frequency": self.l1_frequency,
-            "Internal temperature": self.temperature,
+            "work_mode": self.work_mode_string,
+            "pac": self.pac,
+            "e_today": self.e_today,
+            "e_total": self.e_total,
+            "l1_voltage": self.l1_voltage,
+            "l1_frequency": self.l1_frequency,
+            "temperature": self.temperature,
         }
