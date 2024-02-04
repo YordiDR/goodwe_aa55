@@ -36,8 +36,9 @@ class GoodweAA55FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             port = user_input[CONF_PORT]
             try:
                 inverter = Inverter(host, port)
-            except InverterError:
+            except InverterError as error:
                 errors[CONF_HOST] = "connection_error"
+                _LOGGER.debug("Could not connect to inverter. Error raised: %s", error)
             else:
                 await self.async_set_unique_id(inverter.serial_number)
                 self._abort_if_unique_id_configured()
