@@ -1,17 +1,22 @@
+import asyncio
 import inverter
+import time
 
-inverter = inverter.Inverter("adrlpi01.adrlab.xyz", 8002)
+async def main():
+    myInverter = inverter.Inverter("adrlpi01.adrlab.xyz", 8002)
 
-print(f"Model: {inverter.model}")
-print(f"Serial number: {inverter.serial_number}")
+    print(f"Model: {myInverter.model}")
+    print(f"Serial number: {myInverter.serial_number}")
 
-inverter.update_running_info()
+    await myInverter.update_running_info()
 
-print(f"Work mode: {inverter.work_mode_string}")
-print(f"Current feeding power: {inverter.pac}")
-print(f"E today: {inverter.e_today}")
-print(f"E total: {inverter.e_total}")
-print(f"Line 1 Voltage: {inverter.l1_voltage}")
-print(f"Line 1 Frequency: {inverter.l1_frequency}")
-print(f"Total running hours: {inverter.running_hours}")
-print(f"Temperature: {inverter.temperature}")
+    print(f"Work mode: {myInverter.work_mode_string}")
+    print(f"Current feeding power: {myInverter.pac}")
+    print(f"E today: {myInverter.e_today}")
+    print(f"E total: {myInverter.e_total}")
+    print(f"Line 1 Voltage: {myInverter.l1_voltage}")
+    print(f"Line 1 Frequency: {myInverter.l1_frequency}")
+    print(f"Total running hours: {myInverter.running_hours}")
+    print(f"Temperature: {myInverter.temperature}")
+
+asyncio.run(main())
