@@ -1,7 +1,9 @@
 from __future__ import annotations
-from enum import Enum
 
+from enum import Enum
 import socket
+
+from exceptions import InverterError, RequestFailedException
 
 
 class InverterStatus(Enum):
@@ -32,11 +34,11 @@ class Inverter:
     # Constructor
     def __init__(self, host: str, port: int) -> None:
         if host is None:
-            raise SystemError("No host to connect to was specified.")
+            raise InverterError("No host to connect to was specified.")
         self.host = host
 
         if port is None:
-            raise SystemError("No port to connect to was specified.")
+            raise InverterError("No port to connect to was specified.")
         self.port = port
 
         device_info = self._query_id_info()
@@ -64,17 +66,17 @@ class Inverter:
         try:
             curResponse = cs.recv(150)
         except TimeoutError as error:
-            raise TimeoutError(
+            raise InverterError(
                 f'The inverter did not respond to the "{message.hex()}" command.'
             ) from error
 
         if len(curResponse) < 9:
-            raise SystemError(
+            raise RequestFailedException(
                 f'Invalid response received to the "{message.hex()}" command. At least nine bytes should be received (AA55 headers + CRC). Received: {curResponse.hex()}'
             )
 
         if curResponse[0:6] != expectedHeader:
-            raise SystemError(
+            raise RequestFailedException(
                 f"Received header does not match the expected header, received {curResponse[0:6].hex()} instead of {expectedHeader.hex()}"
             )
 
@@ -91,7 +93,7 @@ class Inverter:
                 curResponse = cs.recv(150)
 
             except TimeoutError as error:
-                raise SystemError(
+                raise InverterError(
                     f'The inverter stopped sending data while we are still expecting data for the "{message.hex()}" command. Received response: {curResponse.hex()}'
                 ) from error
 
@@ -112,7 +114,7 @@ class Inverter:
             print(
                 f'CRC error detected. Calculated CRC: {calculatedCRC}, received CRC {receivedCRC} for command "{message.hex()}"'
             )
-            raise SystemExit(
+            raise RequestFailedException(
                 f'CRC error detected. Calculated CRC: {calculatedCRC}, received CRC {receivedCRC} for command "{message.hex()}"'
             )
         print("CRC validated successfully.")
