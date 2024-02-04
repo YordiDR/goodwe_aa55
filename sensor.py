@@ -17,7 +17,6 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    EntityCategory,
     UnitOfElectricPotential,
     UnitOfEnergy,
     UnitOfFrequency,
