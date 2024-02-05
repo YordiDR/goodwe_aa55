@@ -1,0 +1,6 @@
+{
+  "name": "GoodWe Inverter AA55 over RS485",
+  "country": "BE",
+  "domains": ["sensor"],
+  "homeassistant": "2023.10.0"
+}
