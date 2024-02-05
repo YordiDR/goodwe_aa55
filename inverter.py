@@ -18,22 +18,23 @@ class Inverter:
     """Class representing Goodwe inverter"""
 
     # Properties
-    host = None
-    port = -1
-    serial_number = None
-    model = None
-    work_mode = -1
-    work_mode_string = None
-    pac = -1
-    e_today = -1
-    e_total = -1
-    l1_voltage = -1
-    l1_frequency = -1
-    temperature = -1
-    running_hours = -1
+    host: str = None
+    port: int = -1
+    serial_number: str = None
+    model: str = None
+    work_mode: int = -1
+    work_mode_string: str = None
+    pac: int = -1
+    e_today: float = -1
+    e_total: float = -1
+    l1_voltage: float = -1
+    l1_frequency: float = -1
+    temperature: float = -1
+    running_hours: int = -1
+    mock: bool = False
 
     # Constructor
-    def __init__(self, host: str, port: int) -> None:
+    def __init__(self, host: str, port: int, mock: bool = False) -> None:
         if host is None:
             raise InverterError("No host to connect to was specified.")
         self.host = host
@@ -41,6 +42,8 @@ class Inverter:
         if port is None:
             raise InverterError("No port to connect to was specified.")
         self.port = port
+
+        self.mock = mock
 
         device_info = self._query_id_info()
 
@@ -124,7 +127,14 @@ class Inverter:
 
     def _query_id_info(self) -> dict[str, str]:
         # Execute query id info command
-        payload = self._execute_aa55_command(b"\xaa\x55\xc0\x7f\x01\x02\x00\x02\x41")
+        if not self.mock:
+            payload = self._execute_aa55_command(
+                b"\xaa\x55\xc0\x7f\x01\x02\x00\x02\x41"
+            )
+        else:
+            payload = bytes.fromhex(
+                "20202020204757313530302d58532020202020202020202020202020202020353135303053535832313157303431332020202020202020202020202020202006"
+            )
 
         # Parse response
         model = payload[5:15].decode("ascii").rstrip()
@@ -134,7 +144,14 @@ class Inverter:
 
     def _query_running_info(self) -> dict[str, str]:
         # Execute query running info command
-        payload = self._execute_aa55_command(b"\xaa\x55\xc0\x7f\x01\x01\x00\x02\x40")
+        if not self.mock:
+            payload = self._execute_aa55_command(
+                b"\xaa\x55\xc0\x7f\x01\x01\x00\x02\x40"
+            )
+        else:
+            payload = bytes.fromhex(
+                "06ae000000080000094d0005138c0089000100f10000000000007a9000001bfc141f0000019501400edd0006000018011e0a1d0500eb003d000e0000"
+            )
 
         # Parse response
         l1_voltage = int(payload[8:10].hex(), 16) / 10
