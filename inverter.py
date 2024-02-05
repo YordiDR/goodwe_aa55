@@ -125,7 +125,7 @@ class Inverter:
 
         return payload
 
-    def _query_id_info(self) -> dict[str, str]:
+    def _query_id_info(self) -> dict[str, Any]:
         # Execute query id info command
         if not self.mock:
             payload = self._execute_aa55_command(
@@ -142,7 +142,7 @@ class Inverter:
 
         return {"model": model, "serial_number": serial_number}
 
-    def _query_running_info(self) -> dict[str, str]:
+    def _query_running_info(self) -> dict[str, Any]:
         # Execute query running info command
         if not self.mock:
             payload = self._execute_aa55_command(
@@ -210,4 +210,5 @@ class Inverter:
             "l1_voltage": self.l1_voltage,
             "l1_frequency": self.l1_frequency,
             "temperature": self.temperature,
+            "running_hours": self.running_hours,
         }
