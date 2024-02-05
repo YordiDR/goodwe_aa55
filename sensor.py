@@ -133,7 +133,7 @@ async def async_setup_entry(
 
     # Individual inverter sensors entities
     entities: list[InverterSensor] = [
-        InverterSensor(coordinator, device_info, inverter, "workMode"),
+        InverterSensor(coordinator, device_info, inverter, "work_mode"),
         InverterSensor(coordinator, device_info, inverter, "pac"),
         InverterSensor(coordinator, device_info, inverter, "e_today"),
         InverterSensor(coordinator, device_info, inverter, "e_total"),
