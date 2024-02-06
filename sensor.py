@@ -69,6 +69,17 @@ class GoodweAA55SensorEntityDescription(SensorEntityDescription):
     )
 
 
+_NAMES: dict[str, str] = {
+    "work_mode": "Work mode",
+    "pac": "Feeding power",
+    "e_today": "Energy today",
+    "e_total": "Energy total",
+    "running_hours": "Running hours",
+    "temperature": "Temperature",
+    "l1_voltage": "Phase 1 voltage",
+    "l1_frequency": "Phase 1 frequency",
+}
+
 _DESCRIPTIONS: dict[str, GoodweAA55SensorEntityDescription] = {
     "work_mode": GoodweAA55SensorEntityDescription(key="text"),
     "pac": GoodweAA55SensorEntityDescription(
@@ -159,7 +170,7 @@ class InverterSensor(CoordinatorEntity[GoodweAA55UpdateCoordinator], SensorEntit
     ) -> None:
         """Initialize an inverter sensor."""
         super().__init__(coordinator)
-        self._attr_name = sensorName
+        self._attr_name = _NAMES[sensorName]
         self._attr_unique_id = f"{DOMAIN}-{sensorName}-{inverter.serial_number}"
         self._attr_device_info = device_info
         self.entity_description = _DESCRIPTIONS[sensorName]
@@ -194,7 +205,7 @@ class InverterSensor(CoordinatorEntity[GoodweAA55UpdateCoordinator], SensorEntit
         if not self.coordinator.last_update_success:
             self.coordinator.reset_sensor(self._sensorName)
             self.async_write_ha_state()
-            _LOGGER.debug("Goodwe reset %s to 0", self.name)
+            _LOGGER.debug("Goodwe reset %s to 0", self._sensorName)
         next_midnight = dt_util.start_of_local_day(
             dt_util.now() + timedelta(days=1, minutes=1)
         )
