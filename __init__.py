@@ -20,7 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Connect to Goodwe inverter
     try:
-        inverter = Inverter(host, port)
+        inverter = Inverter(host, port, True)
     except InverterError as err:
         raise ConfigEntryNotReady from err
 

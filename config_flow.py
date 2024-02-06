@@ -35,7 +35,7 @@ class GoodweAA55FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             host = user_input[CONF_HOST]
             port = user_input[CONF_PORT]
             try:
-                inverter = Inverter(host, port)
+                inverter = Inverter(host, port, True)
             except InverterError as error:
                 errors[CONF_HOST] = "connection_error"
                 _LOGGER.debug("Could not connect to inverter. Error raised: %s", error)
