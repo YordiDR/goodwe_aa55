@@ -37,23 +37,25 @@ class GoodweAA55UpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the inverter."""
-        failureCount = 0
         try:
             self._last_data = self.data if self.data else {}
             return await self.inverter.get_running_info()
         except RequestFailedException as ex:
-            failureCount += 1
             # UDP communication with inverter is by definition unreliable.
             # It is rather normal in many environments to fail to receive
             # proper response in usual time, so we intentionally ignore isolated
             # failures and report problem with availability only after
             # consecutive streak of 3 of failed requests.
-            if failureCount < 3:
-                _LOGGER.debug("No response received (streak of %d)", failureCount)
+            if ex.consecutive_failures_count < 3:
+                _LOGGER.debug(
+                    "No response received (streak of %d)", ex.consecutive_failures_count
+                )
                 # return last known data
                 return self._last_data
             # Inverter does not respond anymore (e.g. it went to sleep mode)
-            _LOGGER.debug("Inverter not responding (streak of %d)", failureCount)
+            _LOGGER.debug(
+                "Inverter not responding (streak of %d)", ex.consecutive_failures_count
+            )
             raise UpdateFailed(ex) from ex
         except InverterError as ex:
             raise UpdateFailed(ex) from ex

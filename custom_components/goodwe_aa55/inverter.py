@@ -31,6 +31,7 @@ class Inverter:
     l1_frequency: float = -1
     temperature: float = -1
     running_hours: int = -1
+    consecutive_com_failures: int = 0
     mock: bool = False
 
     # Constructor
@@ -70,9 +71,12 @@ class Inverter:
         try:
             curResponse = cs.recv(150)
         except TimeoutError as error:
+            self.consecutive_com_failures += 1
             raise RequestFailedException(
-                f'The inverter did not respond to the "{message.hex()}" command.'
+                f'The inverter did not respond to the "{message.hex()}" command.',
+                self.consecutive_com_failures,
             ) from error
+        self.consecutive_com_failures = 0
 
         if len(curResponse) < 9:
             raise RequestFailedException(
