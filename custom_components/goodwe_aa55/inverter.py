@@ -43,11 +43,9 @@ class Inverter:
         if port is None:
             raise InverterError("No port to connect to was specified.")
         self.port = port
-
         self.mock = mock
 
         device_info = self._query_id_info()
-
         self.model = device_info["model"]
         self.serial_number = device_info["serial_number"]
 
@@ -73,9 +71,9 @@ class Inverter:
         except TimeoutError as error:
             self.consecutive_com_failures += 1
             raise RequestFailedException(
-                f'The inverter did not respond to the "{message.hex()}" command.',
-                self.consecutive_com_failures,
+                f'The inverter did not respond to the "{message.hex()}" command.'
             ) from error
+
         self.consecutive_com_failures = 0
 
         if len(curResponse) < 9:
@@ -107,7 +105,6 @@ class Inverter:
 
             response += curResponse
 
-        print(f'Full response to command "{message.hex()}" received from inverter.')
         cs.close()
         payload = response[7:-2]
 
@@ -119,13 +116,9 @@ class Inverter:
             calculatedCRC += byte
 
         if calculatedCRC != receivedCRC:
-            print(
-                f'CRC error detected. Calculated CRC: {calculatedCRC}, received CRC {receivedCRC} for command "{message.hex()}"'
-            )
             raise RequestFailedException(
                 f'CRC error detected. Calculated CRC: {calculatedCRC}, received CRC {receivedCRC} for command "{message.hex()}"'
             )
-        print("CRC validated successfully.")
 
         return payload
 
@@ -181,20 +174,7 @@ class Inverter:
     async def get_running_info(self) -> dict[str, Any]:
         """Retrieves the running information from the inverter and updates the inverter object."""
 
-        try:
-            device_runningInfo = self._query_running_info()
-        except TimeoutError:
-            print("Inverter is offline.")
-            self.work_mode = -1
-            self.work_mode_string = InverterStatus(self.work_mode).name
-            self.pac = 0
-            self.l1_voltage = 0
-            self.l1_frequency = 0
-            self.temperature = 0
-            return
-        except:
-            print("An error occurred during the retrieval of the running info.")
-            return
+        device_runningInfo = self._query_running_info()
 
         self.work_mode = device_runningInfo["work_mode"]
         self.work_mode_string = InverterStatus(self.work_mode).name

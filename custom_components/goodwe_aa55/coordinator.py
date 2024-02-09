@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import SCAN_INTERVAL
 from .exceptions import InverterError, RequestFailedException
-from .inverter import Inverter
+from .inverter import Inverter, InverterStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,25 +38,36 @@ class GoodweAA55UpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the inverter."""
         try:
-            self._last_data = self.data if self.data else {}
+            if self.data:
+                self._last_data = self.data
             return await self.inverter.get_running_info()
-        except RequestFailedException as ex:
+        except RequestFailedException:
             # UDP communication with inverter is by definition unreliable.
             # It is rather normal in many environments to fail to receive
             # proper response in usual time, so we intentionally ignore isolated
             # failures and report problem with availability only after
             # consecutive streak of 3 of failed requests.
-            if ex.consecutive_failures_count < 3:
+            if self.inverter.consecutive_com_failures < 3:
                 _LOGGER.debug(
-                    "No response received (streak of %d)", ex.consecutive_failures_count
+                    "No response received (streak of %d)",
+                    self.inverter.consecutive_com_failures,
                 )
                 # return last known data
                 return self._last_data
             # Inverter does not respond anymore (e.g. it went to sleep mode)
             _LOGGER.debug(
-                "Inverter not responding (streak of %d)", ex.consecutive_failures_count
+                "Inverter not responding (streak of %d)",
+                self.inverter.consecutive_com_failures,
             )
-            raise UpdateFailed(ex) from ex
+
+            return {
+                "work_mode": InverterStatus(-1).name,
+                "pac": 0,
+                "l1_voltage": None,
+                "l1_frequency": None,
+                "temperature": None,
+            }
+
         except InverterError as ex:
             raise UpdateFailed(ex) from ex
 
