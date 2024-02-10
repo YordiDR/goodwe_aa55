@@ -63,9 +63,12 @@ class GoodweAA55UpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return {
                 "work_mode": InverterStatus(-1).name,
                 "pac": 0,
+                "e_today": self._last_data.get("e_today"),
+                "e_total": self._last_data.get("e_total"),
                 "l1_voltage": None,
                 "l1_frequency": None,
                 "temperature": None,
+                "running_hours": self._last_data.get("running_hours"),
             }
 
         except InverterError as ex:
