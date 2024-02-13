@@ -202,7 +202,10 @@ class InverterSensor(CoordinatorEntity[GoodweAA55UpdateCoordinator], SensorEntit
         even when the inverter is in sleep mode and no longer responds to request.
         In contrast to "total" sensors, these "daily" sensors need to be reset to 0 on midnight.
         """
-        if not self.coordinator.last_update_success:
+        if (
+            not self.coordinator.last_update_success
+            or self.coordinator.inverter.work_mode == -1
+        ):
             self.coordinator.reset_sensor(self._sensorName)
             self.async_write_ha_state()
             _LOGGER.debug("Goodwe reset %s to 0", self._sensorName)
