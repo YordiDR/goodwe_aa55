@@ -70,6 +70,7 @@ class Inverter:
             curResponse = cs.recv(150)
         except TimeoutError as error:
             self.consecutive_com_failures += 1
+
             raise RequestFailedException(
                 f'The inverter did not respond to the "{message.hex()}" command.'
             ) from error
@@ -174,7 +175,19 @@ class Inverter:
     async def get_running_info(self) -> dict[str, Any]:
         """Retrieves the running information from the inverter and updates the inverter object."""
 
-        device_runningInfo = self._query_running_info()
+        try:
+            device_runningInfo = self._query_running_info()
+        except RequestFailedException as ex:
+            # Return offline statistics after three consecutive communication failures
+            if self.consecutive_com_failures == 3:
+                self.work_mode = -1
+                self.work_mode_string = InverterStatus(self.work_mode).name
+                self.pac = 0
+                self.l1_voltage = 0
+                self.l1_frequency = 0
+                self.temperature = 0
+
+            raise RequestFailedException(ex) from ex
 
         self.work_mode = device_runningInfo["work_mode"]
         self.work_mode_string = InverterStatus(self.work_mode).name
