@@ -183,9 +183,9 @@ class Inverter:
                 self.work_mode = -1
                 self.work_mode_string = InverterStatus(self.work_mode).name
                 self.pac = 0
-                self.l1_voltage = 0
-                self.l1_frequency = 0
-                self.temperature = 0
+                self.l1_voltage = -1
+                self.l1_frequency = -1
+                self.temperature = -1
 
             raise RequestFailedException(ex) from ex
 
